@@ -1,0 +1,169 @@
+extends layout.pug
+
+block content
+    .container.mt-5
+        .row.justify-content-center
+            .col-12
+                
+                a.btn.btn-primary.mb-3.btn-hover-transform(style="background-color: #212529; border-color: #212529;" href="/create", role="button") Create a new contact
+        .row
+            .col-md-6
+                label(for='first-name-box')
+                input#first-name-box.form-control(type='text' placeholder='Search by first name')
+            .col-md-6
+                label(for='last-name-box')
+                input#last-name-box.form-control(type='text' placeholder='Search by last name')
+            br
+            br
+            br
+            br
+            // Table for md screens and up
+            .col-12.d-none.d-md-block
+                table.table.table-responsive-md
+                    thead.thead-dark
+                        tr
+                            th Name
+                            th Phone
+                            th Email
+                            th Address
+                            th Contact Preferences
+                            th 
+                    tbody
+                        each contact in contacts
+                            tr
+                                td
+                                    a(style="color: #ADB3BC;" href="/"+contact.id) #{contact.title} #{contact.first_name} #{contact.last_name}
+                                td= contact.phone_number
+                                td= contact.email_address
+                                td= contact.address 
+                                td
+                                    | Phone 
+                                    input(type='checkbox', checked=contact.contact_by_phone == 1, disabled)
+                                    br
+                                    | Email 
+                                    input(type='checkbox', checked=contact.contact_by_email == 1, disabled)
+                                    br
+                                    | Mail 
+                                    input(type='checkbox', checked=contact.contact_by_mail ==1, disabled)
+                                td
+                                    if user
+                                        a.btn.btn-primary.btn-hover-transform(style="background-color: #212529; border-color: #212529;", href='/' + contact.id + '/edit') Edit
+                                        a.btn.btn-danger.mt-2.btn-hover-transform(href='/' + contact.id + '/delete') Delete
+
+                    alert.alert-warning(style="display: none;") Nothing found
+
+            // Adjusted Cards for xs and sm screens 
+            .col-12.d-md-none
+                each contact in contacts
+                    .card.mb-3(style="background-color: #212529; color: white;")
+                        .card-body
+                            .text-center
+                                a.link-hover(href="/"+contact.id)
+                                    h5.card-title(style="color: #ADB3BC;") #{contact.title} #{contact.first_name} #{contact.last_name}
+                            p.card-text
+                                strong Phone: 
+                                | #{contact.phone_number}
+                            p.card-text
+                                strong Email: 
+                                | #{contact.email_address}
+                            p.card-text
+                                strong Address:
+                                | #{contact.address}
+                            p.card-text
+                                | Prefer contact by:
+                                br
+                                | Phone 
+                                input(type='checkbox', checked=contact.contact_by_phone == 1,, disabled)
+                                br
+                                | Email 
+                                input(type='checkbox', checked=contact.contact_by_email == 1,, disabled)
+                                br
+                                | Mail 
+                                input(type='checkbox', checked=contact.contact_by_mail ==1, disabled)
+                            p.card-text
+                                if user
+                                        a.btn.btn-primary.btn-hover-transform( href='/' + contact.id + '/edit') Edit
+                                        a.btn.btn-danger.ml-3.btn-hover-transform(href='/' + contact.id + '/delete') Delete
+
+                    alert.alert-warning(style="display: none;" ) Nothing found
+
+            .col-12
+                div#map-container(style="position:relative; height:700px; margin-bottom:5rem; margin-top:1rem;")
+                    div#map(style="position:absolute; top:0; bottom:0; width:100%;")
+                    script.
+                        var map = L.map("map").setView([41, -74], 13);
+                        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }).addTo(map);
+                        console.log("Map initialized");
+
+                        const contactsLayer = L.layerGroup().addTo(map);
+                        const markers = [];
+
+                        contacts = !{JSON.stringify(contacts)};
+                        contacts.forEach((contact) => {
+                            const marker = L.marker([contact.lat, contact.lng]);
+                            marker.bindPopup(`
+                                <div>
+                                <a href="/${contact.id}">${contact.first_name} ${contact.last_name}</a>
+                                <br>${contact.phone_number}
+                                <br>${contact.email_address}
+                                <br>${contact.address}
+                                </div>
+                            `);
+                            contactsLayer.addLayer(marker);
+                            markers.push(marker);
+                        });
+
+                        // Centering the Map on-click
+                        const centerOnMarker = function(marker) {
+                            try{
+                                map.flyTo(marker.getLatLng(), 15);
+                            }
+                            catch (err) {
+                                map.flyTo([0, 0], 15);
+                            }
+
+                        };
+                        const mapContainer = document.getElementById('map-container');
+                        const contactItems = document.querySelectorAll('table.table tbody tr, .col-12.d-md-none .card');
+                        contactItems.forEach((item, index) => {
+                            item.addEventListener('click', () => {
+                                markers[index].openPopup();
+                                centerOnMarker(markers[index]);
+                                mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            });
+                                item.style.cursor = 'pointer'; 
+                        });
+                        const contactItemscards = document.querySelectorAll('.col-12.d-md-none .card');
+                        contactItemscards.forEach((item, index) => {
+                            item.addEventListener('click', () => {
+                                markers[index].openPopup();
+                                centerOnMarker(markers[index]);
+                                mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            });
+                                item.style.cursor = 'pointer'; 
+                        });
+
+    script.
+        const firstNameFromBox = document.querySelector('#first-name-box');
+        const lastNameFromBox = document.querySelector('#last-name-box');
+        const contactList = document.querySelector('table.table tbody tr, .col-12.d-md-none .card');
+        
+        function filterContacts() {
+            const firstName = firstNameFromBox.value.trim().toLowerCase();
+            const lastName = lastNameFromBox.value.trim().toLowerCase();
+
+            // iterating through the list items
+            contactItems.forEach(contact => {
+            let contactFirstName = (contact.children[0]?.querySelector('a')?.textContent || '').trim().toLowerCase();
+            let contactLastName = (contact.children[0]?.querySelector('a')?.textContent.split(' ')[2] || '').trim().toLowerCase();
+
+            //if name matches search, display contact, else hide it
+            contact.style.display = (contactFirstName.includes(firstName) && contactLastName.includes(lastName)) ? '' : 'none';
+            });
+        }
+
+        firstNameFromBox.addEventListener('input', filterContacts);
+        lastNameFromBox.addEventListener('input', filterContacts);

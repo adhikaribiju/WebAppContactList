@@ -1,0 +1,17 @@
+
+extends layout.pug
+
+block content
+    .vh-100.d-flex.align-items-center.justify-content-center.mt-4
+        .card(style='width: 100%; max-width: 400px; background-color: #212529;')
+            .card-body
+                h1.text-center.mb-3(style="color:#DC3444") Delete Contact
+                h2.text-center.mb-2 #{contact.firstname} #{contact.lastname}
+                p.text-center.mb-4 Are you sure you want to delete this contact?
+
+                form(action='/' + contact.id + '/delete', method='post').text-center
+                    button.btn.btn-danger.btn-block.mb-3.btn-hover-transform(type='submit') Yes!
+                    a.btn.btn-secondary.btn-block.btn-hover-transform(href='/') Nevermind
+
+                if message
+                    .alert.alert-warning.mt-3 #{message}

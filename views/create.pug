@@ -1,0 +1,89 @@
+extends layout.pug
+
+block content
+    .py-5(style='background-color: #343A40; min-height: 100vh;')
+        .container
+            .row.justify-content-center
+                .col-lg-8
+                    .card(style='background-color: #212529;')
+                        .card-body
+                            h1.text-center.mb-4 Create Contact
+                            form(action='/create' method='POST' , id = "create-form" onsubmit="return verifyAddress(event);")
+                                .row
+                                    .col-md-6.form-group
+                                        label(for='title') Title
+                                        select#title.form-control(name="title")
+                                            option(value="" selected disabled) Select Title 
+                                            option(value="Mr.") Mr.
+                                            option(value="Mrs.") Mrs.
+                                            option(value="Ms.") Ms.
+                                            option(value="Dr.") Dr.
+                                            
+                                    .col-md-6.form-group
+                                        label(for='firstname') First Name:
+                                        input.form-control(type='text', name='firstname', required)
+                                    
+                                    .col-md-6.form-group
+                                        label(for='lastname') Last Name:
+                                        input.form-control(type='text', name='lastname', required)
+                                    
+                                    .col-md-6.form-group
+                                        label(for='phone') Phone:
+                                        input.form-control(type='text', name='phone')
+                                    
+                                    .col-md-6.form-group
+                                        label(for='email') Email:
+                                        input.form-control(type='text', name='email')
+                                    
+                                    .col-md-6.form-group
+                                        label(for='address') Address:
+                                        input#address.form-control(type='text', name='address')
+
+                                .form-group
+                                    .custom-control.custom-checkbox
+                                        input.custom-control-input(type='checkbox', id='contactByPhone', name='contactByPhone')
+                                        label.custom-control-label(for='contactByPhone') Contact by Phone
+
+                                    .custom-control.custom-checkbox
+                                        input.custom-control-input(type='checkbox', id='contactByEmail', name='contactByEmail')
+                                        label.custom-control-label(for='contactByEmail') Contact by Email
+                                    
+                                    .custom-control.custom-checkbox
+                                        input.custom-control-input(type='checkbox', id='contactByMail', name='contactByMail')
+                                        label.custom-control-label(for='contactByMail') Contact by Mail
+
+                                
+                                             
+                                .text-center
+                                    button.btn.btn-primary.btn-hover-transform.mr-2 Add
+                                    a.btn.btn-danger.btn-hover-transform(href='/') Cancel
+                                    br
+                                    br
+                                    p#message 
+                                    
+                                script.
+                                    async function verifyAddress(event) {
+                                        
+                                        event.preventDefault();
+                                        const addressInput = document.querySelector('#address');
+                                        const address = addressInput.value;
+                                        const response = await fetch (`/geoVerify?address=${address}`);
+
+                                        const {addressBool} = await response.json();
+
+                                        if (!addressBool) {
+                                            document.getElementById('message').textContent = 'Invalid address. Please enter a valid address.';
+                                            event.preventDefault(); // Prevent form submission
+                                            return false;
+                                        }else{
+                                            document.querySelector('#create-form').submit();
+                                        }
+                                    }
+
+
+
+                                if message
+                                    .alert.alert-warning.mt-3 #{message}
+                                
+                                    
+                                

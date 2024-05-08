@@ -1,0 +1,31 @@
+extends layout.pug
+
+block content
+    .container
+        .row.justify-content-center
+            .col-md-6.col-lg-4.mt-5
+                .card.border-0.shadow-sm(style="background-color: #212529;")
+                    .card-body
+                        h1.text-center.mb-4.text-white Login 
+                        form(action='/login', method='post').needs-validation(novalidate)
+                            .form-group
+                                label.text-white(for='username') Username
+                                input.form-control(type='text', name='username', required, placeholder='Enter your username')
+                                .invalid-feedback Please enter your username.
+
+                            .form-group
+                                label.text-white(for='password') Password
+                                input.form-control(type='password', name='password', required, placeholder='Enter your password')
+                                .invalid-feedback Please enter your passworad.
+
+                            .form-group.d-flex.justify-content-between.align-items-center
+                                button.btn.btn-primary.btn-hover-transform(type='submit') Sign in
+                                a.small.text-white(href='/') Nevermind
+
+                            if message 
+                                .alert.alert-warning #{message}
+
+                        .card-footer.bg-transparent
+                            p.text-center
+                                | Don't have an account yet? 
+                                a.text-primary(href='/signup') Sign up here!

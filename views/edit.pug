@@ -1,0 +1,82 @@
+extends layout.pug
+
+block content
+
+    .vh-100.d-flex.align-items-center.justify-content-center.mt-3
+        .card(style='min-width: 60%; background-color: #212529;')
+            .card-body
+                h3.text-center.text-white.mb-3 Update Content
+                form(action='/'+contact.id+'/edit' method='POST',, id = "edit-form" onsubmit="return verifyAddress(event);")
+                    label.text-white(for='title') Title
+                        select#title.form-control(name="title")
+                            option(value="" disabled) Select Title
+                            option(value="Mr." selected=(contact.title === "Mr.")) Mr.
+                            option(value="Mrs." selected=(contact.title === "Mrs.")) Mrs.
+                            option(value="Ms." selected=(contact.title === "Ms.")) Ms.
+                            option(value="Dr." selected=(contact.title === "Dr.")) Dr.
+                    hr
+                    .row
+                        .col-md-6.form-group
+                            label.text-white(for='firstname') First Name:
+                            input.form-control(type='text', name='firstname', value=contact.first_name)
+                        
+                        .col-md-6.form-group
+                            label.text-white(for='lastname') Last Name:
+                            input.form-control(type='text', name='lastname', value=contact.last_name)
+
+                        .col-md-6.form-group
+                            label.text-white(for='phone') Phone:
+                            input.form-control(type='text', name='phone', value=contact.phone_number)
+                        
+                        .col-md-6.form-group
+                            label.text-white(for='email') Email:
+                            input.form-control(type='text', name='email', value=contact.email_address)
+                    hr
+                    .row
+                        .col-md-6.form-group
+                            label.text-white(for='address') Address:
+                            input#address.form-control(type='text', name='address', value=contact.address)
+
+                    hr
+
+                    .row
+                        .col-12.form-group
+                            .custom-control.custom-checkbox.mb-2
+                                input.custom-control-input(type='checkbox', id='contactByPhone', name='contactByPhone', checked=contact.contact_by_phone == 1)
+                                label.custom-control-label.text-white(for='contactByPhone') Contact by Phone
+
+                            .custom-control.custom-checkbox.mb-2
+                                input.custom-control-input(type='checkbox', id='contactByEmail', name='contactByEmail', checked=contact.contact_by_email == 1)
+                                label.custom-control-label.text-white(for='contactByEmail') Contact by Email
+
+                            .custom-control.custom-checkbox.mb-2
+                                input.custom-control-input(type='checkbox', id='contactByMail', name='contactByMail', checked=contact.contact_by_mail == 1)
+                                label.custom-control-label.text-white(for='contactByMail') Contact by Mail
+
+                    .text-center.d-flex.justify-content-around
+                        button.btn.btn-primary.btn-hover-transform Update
+                        a.btn.btn-secondary.btn-hover-transform(href='/') Cancel
+                    br
+                    p#message.text-center
+
+                    script.
+                        async function verifyAddress(event) {
+                            event.preventDefault();
+                            const addressInput = document.querySelector('#address');
+                            const address = addressInput.value;
+                            const response = await fetch (`/geoVerify?address=${address}`);
+
+                            const {addressBool} = await response.json();
+                            if (!addressBool) {
+                                document.getElementById('message').textContent = 'Invalid address. Please enter a valid address.';
+                                event.preventDefault(); // Prevent form submission
+                                return false;
+                            }else{
+                                document.querySelector('#edit-form').submit();
+                            }
+                        }
+                    
+                    if message
+                        .alert.alert-warning #{message}
+                
+

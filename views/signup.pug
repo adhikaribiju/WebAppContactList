@@ -1,0 +1,47 @@
+extends layout.pug
+
+block content
+    p
+        .vh-100.d-flex.align-items-center
+            .container
+                .row.justify-content-center
+                    .col-md-8.col-lg-4
+                        .card.shadow-sm(style='background-color: #212529;')
+                            .card-body
+                                h1.text-center.mb-4 Signup
+                                form(action='/signup', method='post').needs-validation(novalidate)
+                                    .form-group
+                                        label(for='firstname') First Name
+                                        input.form-control(type='text', name='firstname', required)
+                                        .invalid-feedback Please enter your first name.
+
+                                    .form-group
+                                        label(for='lastname') Last Name
+                                        input.form-control(type='text', name='lastname', required)
+                                        .invalid-feedback Please enter your last name.
+
+                                    .form-group
+                                        label(for='username') Username
+                                        input.form-control(type='text', name='username', required)
+                                        .invalid-feedback Please choose a username.
+
+                                    .form-group
+                                        label(for='password') Password
+                                        input.form-control(type='password', name='password', required)
+                                        .invalid-feedback Please enter a password.
+
+                                    .form-group
+                                        label(for='password2') Confirm Password
+                                        input.form-control(type='password', name='password2', required)
+                                        .invalid-feedback Please confirm your password.
+
+                                    .text-center
+                                        button.btn.btn-primary.mr-2.btn-hover-transform(type='submit') Sign up
+                                        a.btn.btn-secondary.btn-hover-transform(href='/') Nevermind
+
+                                    if message
+                                        .alert.alert-warning.mt-3 #{message}
+
+                                .text-center.mt-3
+                                    | Don't have an account yet? 
+                                    a(href='/signup') Sign up here!

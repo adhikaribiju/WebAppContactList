@@ -1,0 +1,39 @@
+
+extends layout.pug
+
+block content
+    br
+    .vh-100.d-flex.justify-content-center.align-items-center
+        .card.text-center(style="background-color: #212529; width: 350px;")
+            .card-body
+                //h1.text-white.mb-4 Contact Info
+                h2.text-white.mb-3 #{contact.first_name} #{contact.last_name}
+                
+                p.text-white
+                    strong Phone number: 
+                    | #{contact.phone_number}
+
+                p.text-white
+                    i May #{contact.contact_by_phone ? 'be' : 'NOT be'} contacted by Phone or Text
+
+                hr
+
+                p.text-white
+                    strong Email address:  
+                    | #{contact.email_address}
+
+                p.text-white
+                    i May #{contact.contact_by_email ? 'be' : 'NOT be'} contacted by Email
+
+                hr
+                p.text-white
+                    strong Address:  
+                    | #{contact.address}
+                p.text-white    
+                    i May #{contact.contact_by_mail ? 'be' : 'NOT be'} contacted by Mail
+    
+            .card-footer.bg-transparent
+                if user
+                    a.btn.btn-primary.btn-hover-transform( href='/' + contact.id + '/edit') Edit Contact
+                    a.btn.btn-danger.ml-2.btn-hover-transform(href='/' + contact.id + '/delete') Delete Contact
+            a.btn.btn-primary.btn-hover-transform(style="background-color: black; border-color: #212529;" href='/') Back to List
